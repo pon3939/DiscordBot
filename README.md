@@ -1,2 +1,3 @@
 # DiscordBot
-DiscordのBot
+DiscordのBot  
+だれか面白いBOT作って
