@@ -51,20 +51,16 @@ async def on_message(message):
 @client.event
 async def on_voice_state_update(before, after):
     try:
-        if after.voice.voice_channel is not None:
-            # ボイスチャンネルに参加している
-            if before.voice.voice_channel is None or before.voice.voice_channel.id != after.voice.voice_channel.id:
-                # beforeとafterが違うチャンネル
-                if len(after.voice.voice_channel.voice_members) == 1:
-                    # 参加したボイスチャンネルが独りぼっち
-                    for channel in after.server.channels:
-                        if channel.name == "general" and channel.type == discord.ChannelType.text:
-                            # ボイスチャンネルの"general"に通知
-                            # nameで判定するのはダサい…
-                            # 一人目だけ通知も微妙かも？
-                            m = after.display_name + "さんが" + after.voice.voice_channel.name + "で独りぼっちです…"
-                            await client.send_message(channel, m)
-                            break
+        if after.voice.voice_channel is not None and len(after.voice.voice_channel.voice_members) == 1:
+            # 通話終了でなく、移動後のチャンネルが独りぼっちの場合のみ通知
+            for channel in after.server.channels:
+                if channel.name == "general" and channel.type == discord.ChannelType.text:
+                    # ボイスチャンネルの"general"に通知
+                    # nameで判定するのはダサい…
+                    # 一人目だけ通知も微妙かも？
+                    m = after.display_name + "さん！！" + after.voice.voice_channel.name + "で独りなの～？？かわいそお～～～！！！！…"
+                    await client.send_message(channel, m)
+                    break
     except Exceptino as e:
         print("例外発生")
         print(e)
