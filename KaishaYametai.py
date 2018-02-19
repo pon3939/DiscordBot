@@ -1,12 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import click
 import discord
+import configparser
 
 # ---------------------------------------
 # DiscordのBOT
 # ---------------------------------------
 
+# iniファイル関係の定数
+INI_SECTION_GENERAL = "general"
+INI_OPTION_TOKEN = "token"
+
+INI_SECTION_TEXT_CHANNEL = "textChannel"
+INI_OPTION_NAME = "name"
+
 client = discord.Client()
+config = configparser.ConfigParser()
 
 # BOT起動時
 @client.event
@@ -17,7 +27,7 @@ async def on_ready():
         print(client.user.id)
         print('------')
     except Exceptino as e:
-        print("例外発生")
+        print("on_ready:例外発生")
         print(e)
 
 # メッセージ受信時
@@ -44,7 +54,7 @@ async def on_message(message):
                 # メッセージが送られてきたチャンネルへメッセージを送る
                 await client.send_message(message.channel, m)
     except Exceptino as e:
-        print("例外発生")
+        print("on_message:例外発生")
         print(e)
 
 # 誰かがボイスチャンネルを移動した時
@@ -58,7 +68,7 @@ async def on_voice_state_update(before, after):
                 if len(after.voice.voice_channel.voice_members) == 1:
                     # 参加したボイスチャンネルが独りぼっち
                     for channel in after.server.channels:
-                        if channel.name == "general" and channel.type == discord.ChannelType.text:
+                        if channel.name == config.get(INI_SECTION_TEXT_CHANNEL, INI_OPTION_NAME) and channel.type == discord.ChannelType.text:
                             # ボイスチャンネルの"general"に通知
                             # nameで判定するのはダサい…
                             # 一人目だけ通知も微妙かも？
@@ -66,8 +76,20 @@ async def on_voice_state_update(before, after):
                             await client.send_message(channel, m)
                             break
     except Exceptino as e:
-        print("例外発生")
+        print("on_voice_state_update:例外発生")
         print(e)
 
 # BOT起動
-client.run("token")
+@click.command()
+@click.argument("ini", type=str)
+def main(ini):
+    try:
+        # iniファイルを読み込む
+        config.read(ini, "utf-8")
+        client.run(config.get(INI_SECTION_GENERAL, INI_OPTION_TOKEN))
+    except Exceptino as e:
+        print("main:例外発生")
+        print(e)
+
+if __name__ == '__main__':
+    main()
