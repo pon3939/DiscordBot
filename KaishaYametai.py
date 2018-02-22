@@ -2,8 +2,8 @@
 
 import click
 import discord
-import configparser
 
+from configparser import ConfigParser
 # ---------------------------------------
 # DiscordのBOT
 # ---------------------------------------
@@ -16,7 +16,7 @@ INI_SECTION_TEXT_CHANNEL = "textChannel"
 INI_OPTION_NAME = "name"
 
 client = discord.Client()
-config = configparser.ConfigParser()
+config = ConfigParser()
 
 # BOT起動時
 @client.event
@@ -26,7 +26,7 @@ async def on_ready():
         print(client.user.name)
         print(client.user.id)
         print('------')
-    except Exceptino as e:
+    except Exception as e:
         print("on_ready:例外発生")
         print(e)
 
@@ -53,7 +53,7 @@ async def on_message(message):
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る
                 await client.send_message(message.channel, m)
-    except Exceptino as e:
+    except Exception as e:
         print("on_message:例外発生")
         print(e)
 
@@ -75,7 +75,7 @@ async def on_voice_state_update(before, after):
                             m = after.display_name + "さんが" + after.voice.voice_channel.name + "で独りぼっちです…"
                             await client.send_message(channel, m)
                             break
-    except Exceptino as e:
+    except Exception as e:
         print("on_voice_state_update:例外発生")
         print(e)
 
@@ -87,7 +87,7 @@ def main(ini):
         # iniファイルを読み込む
         config.read(ini, "utf-8")
         client.run(config.get(INI_SECTION_GENERAL, INI_OPTION_TOKEN))
-    except Exceptino as e:
+    except Exception as e:
         print("main:例外発生")
         print(e)
 
