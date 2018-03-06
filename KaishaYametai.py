@@ -56,7 +56,7 @@ async def on_message(message):
             elif message.content.startswith("ゆるさん"):
                 # ゆるさんで始まる
                 m = ":poop:"
-            elif message.content.startswith("google search"):
+            elif message.content.startswith("google search "):
                 # gogle searchで始まる
                 m = search(message.content.replace("gogle search ", ""))
 
@@ -102,25 +102,34 @@ def main(ini):
         print(e)
 
 # googleで検索
-def search(searchWord, start = None):
+def search(searchWord):
     try:
         service = build("customsearch", "v1", developerKey = config.get(INI_SECTION_GOOGLE, INI_OPTION_API_KEY))
-        response = []
+        # 取得する画像のインデックス
+        start = randint(1, 50)
 
-        if start is None:
-            start = randint(1, 100)
+        # 失敗時は何回かリトライ
+        for i in range(3):
+            try:
+                result = service.cse().list(
+                    q = searchWord,
+                    cx = config.get(INI_SECTION_GOOGLE, INI_OPTION_ENGINE_KEY),
+                    lr = "lang_ja",
+                    start = start,
+                    num = 1,
+                    searchType = "image"
+                ).execute()
+                # 成功時はループを抜ける
+                break
+            except Exception as e:
+                # 失敗時は取得する画像のインデックスを小さくする
+                start = randint(1, start - 1)
 
-        result = service.cse().list(
-            q = searchWord,
-            cx = config.get(INI_SECTION_GOOGLE, INI_OPTION_ENGINE_KEY),
-            lr = "lang_ja",
-            start = start,
-            num=1,
-            searchType = "image"
-        ).execute()
-
-        return result.get("items")[0].get("link")
-
+        if result is None:
+            rtn = ""
+        else:
+            rtn = result.get("items")[0].get("link")
+        return rtn
     except Exception as e:
         print("search:例外発生")
         print(e)
