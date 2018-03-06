@@ -4,6 +4,9 @@ import click
 import discord
 
 from configparser import ConfigParser
+from googleapiclient.discovery import build
+from random import randint
+
 # ---------------------------------------
 # DiscordのBOT
 # ---------------------------------------
@@ -14,6 +17,10 @@ INI_OPTION_TOKEN = "token"
 
 INI_SECTION_TEXT_CHANNEL = "textChannel"
 INI_OPTION_NAME = "name"
+
+INI_SECTION_GOOGLE = "google"
+INI_OPTION_API_KEY = "apiKey"
+INI_OPTION_ENGINE_KEY = "engineKey"
 
 client = discord.Client()
 config = ConfigParser()
@@ -49,6 +56,9 @@ async def on_message(message):
             elif message.content.startswith("ゆるさん"):
                 # ゆるさんで始まる
                 m = ":poop:"
+            elif message.content.startswith("google search "):
+                # gogle searchで始まる
+                m = search(message.content.replace("gogle search ", ""))
 
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る
@@ -89,6 +99,39 @@ def main(ini):
         client.run(config.get(INI_SECTION_GENERAL, INI_OPTION_TOKEN))
     except Exception as e:
         print("main:例外発生")
+        print(e)
+
+# googleで検索
+def search(searchWord):
+    try:
+        service = build("customsearch", "v1", developerKey = config.get(INI_SECTION_GOOGLE, INI_OPTION_API_KEY))
+        # 取得する画像のインデックス
+        start = randint(1, 50)
+
+        # 失敗時は何回かリトライ
+        for i in range(3):
+            try:
+                result = service.cse().list(
+                    q = searchWord,
+                    cx = config.get(INI_SECTION_GOOGLE, INI_OPTION_ENGINE_KEY),
+                    lr = "lang_ja",
+                    start = start,
+                    num = 1,
+                    searchType = "image"
+                ).execute()
+                # 成功時はループを抜ける
+                break
+            except Exception as e:
+                # 失敗時は取得する画像のインデックスを小さくする
+                start = randint(1, start - 1)
+
+        if result is None:
+            rtn = ""
+        else:
+            rtn = result.get("items")[0].get("link")
+        return rtn
+    except Exception as e:
+        print("search:例外発生")
         print(e)
 
 if __name__ == '__main__':
