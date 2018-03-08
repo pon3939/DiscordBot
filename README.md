@@ -1,6 +1,7 @@
 # DiscordBot
 DiscordのBot  
 だれか面白いBOT作って
-## KaisyaYametai
-チャットに対する反応はほぼdiscord.pyのサンプルコードそのまま  
+### チャット
+'gogle search 'の接頭詞を付けるとgoogle画像検索結果を返す
+### 通知
 ボイスチャンネルに誰かが独りぼっちだと、チャットで通知する
