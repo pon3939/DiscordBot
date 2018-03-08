@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+DiscordのBOT
+"""
+
 import click
 import CommonConstants
 import discord
 from CommonFunction import CommonFunction
 from configparser import ConfigParser
 
-# ---------------------------------------
-# DiscordのBOT
-# ---------------------------------------
-
 client = discord.Client()
 ini = ConfigParser()
 commonFunction = CommonFunction(ini)
 
-# メッセージ受信時
 @client.event
 async def on_message(message):
+    """
+    メッセージ受信時の処理
+    """
     try:
         if client.user != message.author:
             # 送り主が自分意外のみ反応する
@@ -36,9 +38,11 @@ async def on_message(message):
         print("on_message:例外発生")
         print(e)
 
-# 誰かがボイスチャンネルを移動した時
 @client.event
 async def on_voice_state_update(before, after):
+    """
+    誰かがボイスチャンネルを移動した時の処理
+    """
     try:
         if after.voice.voice_channel is not None:
             # ボイスチャンネルに参加している
@@ -56,10 +60,12 @@ async def on_voice_state_update(before, after):
         print("on_voice_state_update:例外発生")
         print(e)
 
-# メイン処理
 @click.command()
 @click.argument("ini_path", type=str)
 def main(ini_path):
+    """
+    メイン処理
+    """
     try:
         # iniファイルを読み込む
         ini.read(ini_path, "utf-8")

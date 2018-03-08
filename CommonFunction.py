@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+共通関数
+"""
+
 import CommonConstants
 from configparser import ConfigParser
 from googleapiclient.discovery import build
 from random import randint
 
-# ---------------------------------------
-# 共通関数クラス
-# ---------------------------------------
-
 class CommonFunction:
-    # コンストラクタ
     def __init__(self, ini = None):
+        """
+        コンストラクタ
+        """
         try:
             self.ini = ini
         except Exception as e:
             print("__init__:例外発生")
             print(e)
 
-    # googleで検索
     def search(self, searchWord):
+        """
+        googleで検索
+        """
         try:
             service = build("customsearch", "v1", developerKey = self.ini.get(CommonConstants.INI_SECTION_GOOGLE, CommonConstants.INI_OPTION_API_KEY))
             # 取得する画像のインデックス
