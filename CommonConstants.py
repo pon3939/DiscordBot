@@ -19,3 +19,7 @@ INI_OPTION_ENGINE_KEY = "engineKey"
 
 # メッセージJSONファイルのキー
 JSON_MESSAGE_LONELY = "Lonely"
+
+# 独りぼっち通知の置換文字列
+LONELY_MESSAGE_NAME = "{name}"
+LONELY_MESSAGE_CHANNEL = "{channel}"

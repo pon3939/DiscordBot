@@ -66,7 +66,7 @@ class CommonFunction:
             json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
-            return message.replace("_name_", name).replace("_channel_", channel) # ユーザ名、チャンネル名を置換
+            return message.replace(CommonConstants.LONELY_MESSAGE_NAME, name).replace(CommonConstants.LONELY_MESSAGE_CHANNEL, channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
             print("getLonelyMassage:例外発生")
             print(e)
