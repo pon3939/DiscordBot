@@ -8,6 +8,7 @@
 import CommonConstants
 from configparser import ConfigParser
 from googleapiclient.discovery import build
+from json import load
 from random import randint
 
 class CommonFunction:
@@ -54,4 +55,18 @@ class CommonFunction:
             return rtn
         except Exception as e:
             print("search:例外発生")
+            print(e)
+
+    def getLonelyMassage(self, name, channel):
+        """
+        独りぼっち通知のメッセージの一覧から、ランダムに選択したものを返却
+        """
+        try:
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r")
+            json_data = load(f)
+            messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
+            message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
+            return message.replace("_name_", name).replace("_channel_", channel) # ユーザ名、チャンネル名を置換
+        except Exception as e:
+            print("getLonelyMassage:例外発生")
             print(e)
