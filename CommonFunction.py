@@ -109,6 +109,7 @@ class CommonFunction:
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if message in messageList:
                 return "入力されたテンプレートは既に存在します"
+
             messageList.append(message)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
             with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING) as fOut:
@@ -120,7 +121,7 @@ class CommonFunction:
 
     def deleteLonelyList(self, strIndex):
         """
-        独りぼっち通知のメッセージを追加
+        独りぼっち通知のメッセージを削除
         """
         try:
             # バリデーション
@@ -135,6 +136,7 @@ class CommonFunction:
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if len(messageList) <= index:
                 return "入力されたインデックスのテンプレートは存在しません"
+            
             delMessage = messageList[index] # チャットに流すためにテンプレートを取得
             messageList.pop(index)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
