@@ -33,6 +33,9 @@ async def on_message(message):
             elif message.content.startswith("lonely list"):
                 # 独りぼっち通知のリストを表示
                 m = commonFunction.getLonelyList()
+            elif message.content.startswith("lonely add "):
+                # 独りぼっち通知のリストに追加
+                m = commonFunction.addLonelyList(message.content.replace("lonely add ", ""))
 
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る

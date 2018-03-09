@@ -5,6 +5,9 @@
 共通定数
 """
 
+# ファイル読み込み時の文字コード
+FILE_ENCODING = "utf_8"
+
 # iniファイルのセクション
 INI_SECTION_GENERAL = "general"
 INI_SECTION_TEXT_CHANNEL = "textChannel"

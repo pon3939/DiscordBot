@@ -6,9 +6,10 @@
 """
 
 import CommonConstants
+from codecs import open
 from configparser import ConfigParser
 from googleapiclient.discovery import build
-from json import load
+from json import dump, load
 from random import randint
 
 class CommonFunction:
@@ -62,7 +63,7 @@ class CommonFunction:
         独りぼっち通知のメッセージの一覧から、ランダムに選択したものを取得
         """
         try:
-            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r")
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
             json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
@@ -77,7 +78,7 @@ class CommonFunction:
         """
         try:
             rtn = ""
-            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r")
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
             json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             for message in messageList:
@@ -87,4 +88,32 @@ class CommonFunction:
             return rtn
         except Exception as e:
             print("getLonelyList:例外発生")
+            print(e)
+
+    def addLonelyList(self, message):
+        """
+        独りぼっち通知のメッセージを追加
+        """
+        try:
+            # バリデーション
+            if message == "":
+                return "メッセージのテンプレートを入力してください"
+            elif message.find(CommonConstants.LONELY_MESSAGE_NAME) == -1:
+                return "テンプレートには" + CommonConstants.LONELY_MESSAGE_NAME + "が含まれる必要があります"
+            elif message.find(CommonConstants.LONELY_MESSAGE_CHANNEL) == -1:
+                return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
+
+            rtn = ""
+            fIn = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
+            json_data = load(fIn)
+            messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
+            if message in messageList:
+                return "入力されたテンプレートは既に存在します"
+            messageList.append(message)
+            json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
+            fOut = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING)
+            dump(json_data, fOut) # JSONファイル更新
+            return "テンプレートを追加しました"
+        except Exception as e:
+            print("addLonelyList:例外発生")
             print(e)
