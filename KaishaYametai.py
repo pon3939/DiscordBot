@@ -36,6 +36,9 @@ async def on_message(message):
             elif message.content.startswith("lonely add "):
                 # 独りぼっち通知のリストに追加
                 m = commonFunction.addLonelyList(message.content.replace("lonely add ", ""))
+            elif message.content.startswith("lonely delete "):
+                # 独りぼっち通知のリストから削除
+                m = commonFunction.deleteLonelyList(message.content.replace("lonely delete ", ""))
 
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る
