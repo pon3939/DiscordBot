@@ -30,6 +30,15 @@ async def on_message(message):
             elif message.content.startswith("google search "):
                 # gogle searchで始まる
                 m = commonFunction.search(message.content.replace("gogle search ", ""))
+            elif message.content.startswith("lonely list"):
+                # 独りぼっち通知のリストを表示
+                m = commonFunction.getLonelyList()
+            elif message.content.startswith("lonely add "):
+                # 独りぼっち通知のリストに追加
+                m = commonFunction.addLonelyList(message.content.replace("lonely add ", ""))
+            elif message.content.startswith("lonely delete "):
+                # 独りぼっち通知のリストから削除
+                m = commonFunction.deleteLonelyList(message.content.replace("lonely delete ", ""))
 
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る
@@ -53,7 +62,7 @@ async def on_voice_state_update(before, after):
                     for channel in after.server.channels:
                         if channel.name == ini.get(CommonConstants.INI_SECTION_TEXT_CHANNEL, CommonConstants.INI_OPTION_NAME) and channel.type == discord.ChannelType.text:
                             # ボイスチャンネルの"general"に通知
-                            m = after.display_name + "さんが" + after.voice.voice_channel.name + "で独りぼっちです…"
+                            m = commonFunction.getLonelyMassage(after.display_name, after.voice.voice_channel.name)
                             await client.send_message(channel, m)
                             break
     except Exception as e:
