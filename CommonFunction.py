@@ -78,8 +78,8 @@ class CommonFunction:
         """
         try:
             rtn = ""
-            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
-            json_data = load(f)
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as f:
+                json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             for message in messageList:
                 if rtn != "":
@@ -104,15 +104,15 @@ class CommonFunction:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
 
             rtn = ""
-            fIn = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
-            json_data = load(fIn)
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as fIn:
+                json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if message in messageList:
                 return "入力されたテンプレートは既に存在します"
             messageList.append(message)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
-            fOut = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING)
-            dump(json_data, fOut) # JSONファイル更新
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING) as fOut:
+                dump(json_data, fOut) # JSONファイル更新
             return "テンプレートを追加しました"
         except Exception as e:
             print("addLonelyList:例外発生")
