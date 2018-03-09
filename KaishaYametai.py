@@ -30,6 +30,9 @@ async def on_message(message):
             elif message.content.startswith("google search "):
                 # gogle searchで始まる
                 m = commonFunction.search(message.content.replace("gogle search ", ""))
+            elif message.content.startswith("lonely list"):
+                # 独りぼっち通知のリストを表示
+                m = commonFunction.getLonelyList()
 
             if m != "":
                 # メッセージが送られてきたチャンネルへメッセージを送る

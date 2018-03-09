@@ -59,7 +59,7 @@ class CommonFunction:
 
     def getLonelyMassage(self, name, channel):
         """
-        独りぼっち通知のメッセージの一覧から、ランダムに選択したものを返却
+        独りぼっち通知のメッセージの一覧から、ランダムに選択したものを取得
         """
         try:
             f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r")
@@ -69,4 +69,22 @@ class CommonFunction:
             return message.replace("_name_", name).replace("_channel_", channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
             print("getLonelyMassage:例外発生")
+            print(e)
+
+    def getLonelyList(self):
+        """
+        独りぼっち通知のメッセージの一覧を取得
+        """
+        try:
+            rtn = ""
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r")
+            json_data = load(f)
+            messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
+            for message in messageList:
+                if rtn != "":
+                    rtn += "\n" # 2件目以降は改行
+                rtn += message
+            return rtn
+        except Exception as e:
+            print("getLonelyList:例外発生")
             print(e)
