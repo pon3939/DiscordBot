@@ -96,14 +96,11 @@ class CommonFunction:
         """
         try:
             # バリデーション
-            if message == "":
-                return "メッセージのテンプレートを入力してください"
-            elif message.find(CommonConstants.LONELY_MESSAGE_NAME) == -1:
+            if message.find(CommonConstants.LONELY_MESSAGE_NAME) == -1:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_NAME + "が含まれる必要があります"
             elif message.find(CommonConstants.LONELY_MESSAGE_CHANNEL) == -1:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
 
-            rtn = ""
             with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
