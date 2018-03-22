@@ -6,11 +6,13 @@
 """
 
 import CommonConstants
+from base64 import b64decode
 from codecs import open
 from configparser import ConfigParser
 from googleapiclient.discovery import build
 from json import dump, load
 from random import randint
+from requests import get
 
 class CommonFunction:
     """
@@ -169,6 +171,22 @@ class CommonFunction:
             with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING) as fOut:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
+        except Exception as e:
+            print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)
+
+    def getReadme(self):
+        """
+        readmeを取得
+
+        :rtype: str
+        :return: 取得したreadme
+        """
+        try:
+            response = get(CommonConstants.README_URL) # githubのreadme取得APIをコール
+            responseJson = response.json()
+            rtn = b64decode(responseJson[CommonConstants.JSON_README_CONTENT]).decode("utf_8") #結果をbase64でデコードして、さらにutf8でデコード
+            return rtn
         except Exception as e:
             print(e)
             return(CommonConstants.ERROR_CHAT_MESSAGE)

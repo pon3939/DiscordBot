@@ -3,6 +3,8 @@ DiscordのBot
 だれか面白いBOT作って
 ___
 ## チャット
+### readme表示
+`@{BOT} readme`でreadme表示
 ### google画像検索
 `@{BOT} gogle search {検索キーワード}`でgoogle画像検索
 ### 独りぼっち通知メッセージ編集

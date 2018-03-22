@@ -44,6 +44,9 @@ async def on_message(message):
                 elif content.startswith("lonely delete "):
                     # 独りぼっち通知のリストから削除
                     rtn = commonFunction.deleteLonelyList(content.replace("lonely delete ", ""))
+                elif content.startswith("readme"):
+                    # readmeを表示
+                    rtn = commonFunction.getReadme()
                 else:
                     # 対応していないメッセージだと通知
                     rtn = "何を言っているかわからないよ:sweat_smile:"

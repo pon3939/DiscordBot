@@ -23,8 +23,12 @@ INI_OPTION_ENGINE_KEY = "engineKey"
 # メッセージJSONファイルのキー
 JSON_MESSAGE_LONELY = "Lonely"
 
+# readmeのJSONのキー
+JSON_README_CONTENT = "content"
+
 # 独りぼっち通知の置換文字列
 LONELY_MESSAGE_NAME = "{name}"
 LONELY_MESSAGE_CHANNEL = "{channel}"
 
 ERROR_CHAT_MESSAGE = "エラーが発生しました。管理者に連絡してください。" # エラー時にチャットに流すメッセージ
+README_URL = "https://api.github.com/repos/pon3939/DiscordBot/readme" # githubのreadme取得APIのURL
