@@ -19,6 +19,8 @@ commonFunction = CommonFunction(ini)
 async def on_message(message):
     """
     メッセージ受信時の処理
+
+    :param discord.Message message: 受信したメッセージ
     """
     try:
         if client.user != message.author:
@@ -50,7 +52,10 @@ async def on_message(message):
 @client.event
 async def on_voice_state_update(before, after):
     """
-    誰かがボイスチャンネルを移動した時の処理
+    誰かがボイスチャンネルの状態を変更した時の処理
+
+    :param discord.Member before: 移動前のユーザの情報
+    :param discord.Member after: 移動後のユーザの情報
     """
     try:
         if after.voice.voice_channel is not None:
@@ -74,6 +79,8 @@ async def on_voice_state_update(before, after):
 def main(ini_path):
     """
     メイン処理
+
+    :param str ini_path: INIファイルのパス
     """
     try:
         # iniファイルを読み込む

@@ -13,9 +13,15 @@ from json import dump, load
 from random import randint
 
 class CommonFunction:
+    """
+    共通関数クラス
+    """
+
     def __init__(self, ini = None):
         """
         コンストラクタ
+
+        :param configparser.ConfigParser ini: INIファイル
         """
         try:
             self.ini = ini
@@ -26,6 +32,10 @@ class CommonFunction:
     def search(self, searchWord):
         """
         googleで検索
+
+        :param str searchWord: 検索語句
+        :rtype: str
+        :return: 検索結果のURL
         """
         try:
             service = build("customsearch", "v1", developerKey = self.ini.get(CommonConstants.INI_SECTION_GOOGLE, CommonConstants.INI_OPTION_API_KEY))
@@ -61,6 +71,11 @@ class CommonFunction:
     def getLonelyMassage(self, name, channel):
         """
         独りぼっち通知のメッセージの一覧から、ランダムに選択したものを取得
+
+        :param str name: ユーザ名
+        :param str channel: チャンネル名
+        :rtype: str
+        :return: 選択した通知メッセージ
         """
         try:
             f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
@@ -75,6 +90,9 @@ class CommonFunction:
     def getLonelyList(self):
         """
         独りぼっち通知のメッセージの一覧を取得
+
+        :rtype: str
+        :return: 改行で成形された通知メッセージの一覧
         """
         try:
             rtn = ""
@@ -96,6 +114,10 @@ class CommonFunction:
     def addLonelyList(self, message):
         """
         独りぼっち通知のメッセージを追加
+
+        :param str message: 登録する独りぼっち通知のメッセージ
+        :rtype: str
+        :return: 処理結果メッセージ
         """
         try:
             # バリデーション
@@ -122,6 +144,10 @@ class CommonFunction:
     def deleteLonelyList(self, strIndex):
         """
         独りぼっち通知のメッセージを削除
+
+        :param str strIndex: 削除する独りぼっち通知のインデックス
+        :rtype: str
+        :return: 処理結果メッセージ
         """
         try:
             # バリデーション
@@ -136,7 +162,7 @@ class CommonFunction:
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if len(messageList) <= index:
                 return "入力されたインデックスのテンプレートは存在しません"
-            
+
             delMessage = messageList[index] # チャットに流すためにテンプレートを取得
             messageList.pop(index)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
