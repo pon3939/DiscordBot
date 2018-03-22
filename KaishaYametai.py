@@ -24,27 +24,33 @@ async def on_message(message):
     """
     try:
         if client.user != message.author:
-            # 送り主が自分意外のみ反応する
-            m = ""
-            if message.content.startswith("おはよう"):
-                # おはようで始まる
-                m = "おはようございます" + message.author.name + "さん！"
-            elif message.content.startswith("google search "):
-                # gogle searchで始まる
-                m = commonFunction.search(message.content.replace("gogle search ", ""))
-            elif message.content.startswith("lonely list"):
-                # 独りぼっち通知のリストを表示
-                m = commonFunction.getLonelyList()
-            elif message.content.startswith("lonely add "):
-                # 独りぼっち通知のリストに追加
-                m = commonFunction.addLonelyList(message.content.replace("lonely add ", ""))
-            elif message.content.startswith("lonely delete "):
-                # 独りぼっち通知のリストから削除
-                m = commonFunction.deleteLonelyList(message.content.replace("lonely delete ", ""))
+            # 送り主が自分意外
+            if client.user in message.mentions:
+                # 自分宛てのメンション
+                rtn = ""
+                content = message.content.replace(client.user.mention, "").strip() # メンション部分と空白を削除
+                if content.startswith("おはよう"):
+                    # おはようで始まる
+                    rtn = "おはようございます" + message.author.name + "さん！"
+                elif content.startswith("google search "):
+                    # gogle searchで始まる
+                    rtn = commonFunction.search(content.replace("gogle search ", ""))
+                elif content.startswith("lonely list"):
+                    # 独りぼっち通知のリストを表示
+                    rtn = commonFunction.getLonelyList()
+                elif content.startswith("lonely add "):
+                    # 独りぼっち通知のリストに追加
+                    rtn = commonFunction.addLonelyList(content.replace("lonely add ", ""))
+                elif content.startswith("lonely delete "):
+                    # 独りぼっち通知のリストから削除
+                    rtn = commonFunction.deleteLonelyList(content.replace("lonely delete ", ""))
+                else:
+                    # 対応していないメッセージだと通知
+                    rtn = "何を言っているかわからないよ:sweat_smile:"
 
-            if m != "":
-                # メッセージが送られてきたチャンネルへメッセージを送る
-                await client.send_message(message.channel, m)
+                if rtn != "":
+                    # メッセージが送られてきたチャンネルへメッセージを送る
+                    await client.send_message(message.channel, rtn)
     except Exception as e:
         print("on_message:例外発生")
         print(e)
