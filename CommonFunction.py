@@ -65,8 +65,8 @@ class CommonFunction:
                 rtn = result.get("items")[0].get("link")
             return rtn
         except Exception as e:
-            print("search:例外発生")
             print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)
 
     def getLonelyMassage(self, name, channel):
         """
@@ -84,8 +84,8 @@ class CommonFunction:
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
             return message.replace(CommonConstants.LONELY_MESSAGE_NAME, name).replace(CommonConstants.LONELY_MESSAGE_CHANNEL, channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
-            print("getLonelyMassage:例外発生")
             print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)
 
     def getLonelyList(self):
         """
@@ -108,8 +108,8 @@ class CommonFunction:
                 i += 1
             return rtn
         except Exception as e:
-            print("getLonelyList:例外発生")
             print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)
 
     def addLonelyList(self, message):
         """
@@ -138,8 +138,8 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
-            print("addLonelyList:例外発生")
             print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)
 
     def deleteLonelyList(self, strIndex):
         """
@@ -170,5 +170,5 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
-            print("deleteLonelyList:例外発生")
             print(e)
+            return(CommonConstants.ERROR_CHAT_MESSAGE)

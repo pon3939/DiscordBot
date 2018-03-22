@@ -26,3 +26,5 @@ JSON_MESSAGE_LONELY = "Lonely"
 # 独りぼっち通知の置換文字列
 LONELY_MESSAGE_NAME = "{name}"
 LONELY_MESSAGE_CHANNEL = "{channel}"
+
+ERROR_CHAT_MESSAGE = "エラーが発生しました。管理者に連絡してください。" # エラー時にチャットに流すメッセージ
