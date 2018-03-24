@@ -12,6 +12,7 @@ from configparser import ConfigParser
 from googleapiclient.discovery import build
 from json import dump, load
 from random import randint
+from re import match, sub
 from requests import get
 
 class CommonFunction:
@@ -185,8 +186,17 @@ class CommonFunction:
         try:
             response = get(CommonConstants.README_URL) # githubのreadme取得APIをコール
             responseJson = response.json()
-            rtn = b64decode(responseJson[CommonConstants.JSON_README_CONTENT]).decode("utf_8") #結果をbase64でデコードして、さらにutf8でデコード
-            return rtn
+            readme = b64decode(responseJson[CommonConstants.JSON_README_CONTENT]).decode("utf_8") #結果をbase64でデコードして、さらにutf8でデコード
+
+            rtn = []
+            for line in readme.split("\n"):
+                # Discordで適用されないMarkdownの記法を置き換える
+                if match("#+ ", line):
+                    line = sub("#+ ", "**", line) + "**" # 見出しを太字に置き換え
+                elif line == "___":
+                    line = "" # 水平線を空白行に置き換え
+                rtn.append(line)
+            return "\n".join(rtn) # 改行を挟んで連結
         except Exception as e:
             print(e)
             return(CommonConstants.ERROR_CHAT_MESSAGE)
