@@ -49,7 +49,8 @@ async def on_message(message):
                     rtn = commonFunction.getReadme()
                 else:
                     # 対応していないメッセージだと通知
-                    rtn = "何を言っているかわからないよ:sweat_smile:"
+                    rtn = "何を言っているかわからないよ:sweat_smile:\n" \
+                        "***" + client.user.mention + " readme*** を確認してね:exclamation:"
 
                 if rtn != "":
                     # メッセージが送られてきたチャンネルへメッセージを送る
