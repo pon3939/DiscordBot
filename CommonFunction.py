@@ -81,7 +81,7 @@ class CommonFunction:
         :return: 選択した通知メッセージ
         """
         try:
-            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING)
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING)
             json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
@@ -99,7 +99,7 @@ class CommonFunction:
         """
         try:
             rtn = ""
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as f:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as f:
                 json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
 
@@ -129,7 +129,7 @@ class CommonFunction:
             elif message.find(CommonConstants.LONELY_MESSAGE_CHANNEL) == -1:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
 
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as fIn:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if message in messageList:
@@ -137,7 +137,7 @@ class CommonFunction:
 
             messageList.append(message)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING) as fOut:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
@@ -160,7 +160,7 @@ class CommonFunction:
             if index < 0:
                 return "0以上の数値を指定してください"
 
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "r", CommonConstants.FILE_ENCODING) as fIn:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if len(messageList) <= index:
@@ -169,7 +169,7 @@ class CommonFunction:
             delMessage = messageList[index] # チャットに流すためにテンプレートを取得
             messageList.pop(index)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_MESSAGE_JSON), "w", CommonConstants.FILE_ENCODING) as fOut:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
