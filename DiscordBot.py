@@ -8,12 +8,27 @@ DiscordのBOT
 import click
 import CommonConstants
 import discord
-from CommonFunction import CommonFunction
+from asyncio import ensure_future, get_event_loop
+from CommonFunction import CommonFunction, getMyLogger
 from configparser import ConfigParser
 
 client = discord.Client()
 ini = ConfigParser()
-commonFunction = CommonFunction(ini)
+logger = None
+commonFunction = None
+
+@client.event
+async def on_ready():
+    """
+    BOT起動時の処理
+    """
+    try:
+        # 定期実行処理を非同期で開始(discord.py側で非同期処理開始しているため、非同期処理を追加するだけでOK)
+        logger.info("BOT起動")
+        ensure_future(commonFunction.asyncDeleteLog())
+    except Exception as e:
+        logger.error("on_ready:例外発生")
+        logger.error(e)
 
 @client.event
 async def on_message(message):
@@ -93,8 +108,12 @@ def main(ini_path):
     :param str ini_path: INIファイルのパス
     """
     try:
-        # iniファイルを読み込む
+        global logger, commonFunction
+
+        # iniファイル、ロガーの設定
         ini.read(ini_path, "utf-8")
+        logger = getMyLogger(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "logging.conf", __name__)
+        commonFunction = CommonFunction(ini, logger)
         client.run(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_TOKEN))
     except Exception as e:
         print("main:例外発生")
