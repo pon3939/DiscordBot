@@ -30,11 +30,11 @@ def getMyLogger(confFile, loggerName):
     try:
         fileConfig(confFile)
         rtn = getLogger(loggerName)
-        return(rtn)
+        return rtn
     except Exception as e:
-        print("GetMyLogger:例外発生")
-        print(e)
-        return None
+        logger.error("GetMyLogger:例外発生")
+        logger.error(e)
+        raise e
 
 class CommonFunction:
     """
@@ -49,12 +49,11 @@ class CommonFunction:
         """
         try:
             self.ini = ini
-
-            # ログ出力設定
             self.logger = logger
         except Exception as e:
-            print("__init__:例外発生")
-            print(e)
+            self.logger.error("__init__:例外発生")
+            self.logger.error(e)
+            raise e
 
     def search(self, searchWord):
         """
@@ -92,8 +91,9 @@ class CommonFunction:
                 rtn = result.get("items")[0].get("link")
             return rtn
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("search:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyMassage(self, name, channel):
         """
@@ -111,8 +111,9 @@ class CommonFunction:
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
             return message.replace(CommonConstants.LONELY_MESSAGE_NAME, name).replace(CommonConstants.LONELY_MESSAGE_CHANNEL, channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getLonelyMassage:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyList(self):
         """
@@ -135,8 +136,9 @@ class CommonFunction:
                 i += 1
             return rtn
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def addLonelyList(self, message):
         """
@@ -165,8 +167,9 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("addLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteLonelyList(self, strIndex):
         """
@@ -197,8 +200,9 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("deleteLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getReadme(self):
         """
@@ -222,8 +226,9 @@ class CommonFunction:
                 rtn.append(line)
             return "\n".join(rtn) # 改行を挟んで連結
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getReadme:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteLog(self):
         """
