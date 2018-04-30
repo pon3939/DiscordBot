@@ -6,6 +6,7 @@
 """
 
 import CommonConstants
+from asyncio import sleep
 from base64 import b64decode
 from codecs import open
 from configparser import ConfigParser
@@ -14,13 +15,33 @@ from json import dump, load
 from random import randint
 from re import match, sub
 from requests import get
+from logging import getLogger
+from logging.config import fileConfig
+from pathlib import Path
+
+def getMyLogger(confFile, loggerName):
+    """
+    ロガー取得処理
+
+    :param str confFile: ログ設定ファイルパス
+    :param str loggerName: ロガー名
+    :return: ロガー
+    """
+    try:
+        fileConfig(confFile)
+        rtn = getLogger(loggerName)
+        return rtn
+    except Exception as e:
+        logger.error("GetMyLogger:例外発生")
+        logger.error(e)
+        raise e
 
 class CommonFunction:
     """
     共通関数クラス
     """
 
-    def __init__(self, ini = None):
+    def __init__(self, ini, logger):
         """
         コンストラクタ
 
@@ -28,9 +49,11 @@ class CommonFunction:
         """
         try:
             self.ini = ini
+            self.logger = logger
         except Exception as e:
-            print("__init__:例外発生")
-            print(e)
+            self.logger.error("__init__:例外発生")
+            self.logger.error(e)
+            raise e
 
     def search(self, searchWord):
         """
@@ -68,8 +91,9 @@ class CommonFunction:
                 rtn = result.get("items")[0].get("link")
             return rtn
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("search:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyMassage(self, name, channel):
         """
@@ -87,8 +111,9 @@ class CommonFunction:
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
             return message.replace(CommonConstants.LONELY_MESSAGE_NAME, name).replace(CommonConstants.LONELY_MESSAGE_CHANNEL, channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getLonelyMassage:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyList(self):
         """
@@ -111,8 +136,9 @@ class CommonFunction:
                 i += 1
             return rtn
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def addLonelyList(self, message):
         """
@@ -141,8 +167,9 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("addLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteLonelyList(self, strIndex):
         """
@@ -173,8 +200,9 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("deleteLonelyList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getReadme(self):
         """
@@ -198,5 +226,43 @@ class CommonFunction:
                 rtn.append(line)
             return "\n".join(rtn) # 改行を挟んで連結
         except Exception as e:
-            print(e)
-            return(CommonConstants.ERROR_CHAT_MESSAGE)
+            self.logger.error("getReadme:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
+
+    def deleteLog(self):
+        """
+        古いログファイルを削除
+        """
+        try:
+            self.logger.info("deleteLog開始")
+            pathList = list(sorted(Path(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "log/").glob("*.log.*")))
+            self.logger.info("ファイル一覧:" + str(pathList))
+            if len(pathList) < 10:
+                return
+
+            cnt = 0
+            for path in pathList:
+                path.unlink()
+                self.logger.info("ファイル削除:" + str(path))
+                cnt += 1
+                if len(pathList) - cnt < 10:
+                    return
+        except Exception as e:
+            self.logger.error("deleteLog:例外発生")
+            self.logger.error(e)
+            raise e
+        finally:
+            self.logger.info("deleteLog終了")
+
+    async def asyncDeleteLog(self):
+        """
+        非同期でログファイル削除処理を実行
+        """
+        while True:
+            try:
+                self.deleteLog()
+                await sleep(86400) # 一日に1回実行
+            except Exception as e:
+                self.logger.error("asyncDeleteLog:例外発生")
+                self.logger.error(e)

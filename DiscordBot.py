@@ -8,12 +8,27 @@ DiscordのBOT
 import click
 import CommonConstants
 import discord
-from CommonFunction import CommonFunction
+from asyncio import ensure_future, get_event_loop
+from CommonFunction import CommonFunction, getMyLogger
 from configparser import ConfigParser
 
 client = discord.Client()
 ini = ConfigParser()
-commonFunction = CommonFunction(ini)
+logger = None
+commonFunction = None
+
+@client.event
+async def on_ready():
+    """
+    BOT起動時の処理
+    """
+    try:
+        # 定期実行処理を非同期で開始(discord.py側で非同期処理開始しているため、非同期処理を追加するだけでOK)
+        logger.info("BOT起動")
+        ensure_future(commonFunction.asyncDeleteLog())
+    except Exception as e:
+        logger.error("on_ready:例外発生")
+        logger.error(e)
 
 @client.event
 async def on_message(message):
@@ -23,6 +38,8 @@ async def on_message(message):
     :param discord.Message message: 受信したメッセージ
     """
     try:
+        logger.info("on_message開始")
+        logger.info("message:" + str(message.content))
         if client.user != message.author:
             # 送り主が自分意外
             if client.user in message.mentions:
@@ -58,6 +75,8 @@ async def on_message(message):
     except Exception as e:
         print("on_message:例外発生")
         print(e)
+    finally:
+        logger.info("on_message終了")
 
 @client.event
 async def on_voice_state_update(before, after):
@@ -68,6 +87,7 @@ async def on_voice_state_update(before, after):
     :param discord.Member after: 移動後のユーザの情報
     """
     try:
+        logger.info("on_voice_state_update開始")
         if after.voice.voice_channel is not None:
             # ボイスチャンネルに参加している
             if before.voice.voice_channel is None or before.voice.voice_channel.id != after.voice.voice_channel.id:
@@ -81,8 +101,10 @@ async def on_voice_state_update(before, after):
                             await client.send_message(channel, m)
                             break
     except Exception as e:
-        print("on_voice_state_update:例外発生")
-        print(e)
+        logger.error("on_voice_state_update:例外発生")
+        logger.error(e)
+    finally:
+        logger.info("on_voice_state_update終了")
 
 @click.command()
 @click.argument("ini_path", type=str)
@@ -93,8 +115,12 @@ def main(ini_path):
     :param str ini_path: INIファイルのパス
     """
     try:
-        # iniファイルを読み込む
+        global logger, commonFunction
+
+        # iniファイル、ロガーの設定
         ini.read(ini_path, "utf-8")
+        logger = getMyLogger(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "logging.conf", __name__)
+        commonFunction = CommonFunction(ini, logger)
         client.run(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_TOKEN))
     except Exception as e:
         print("main:例外発生")
