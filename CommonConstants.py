@@ -26,6 +26,13 @@ JSON_MESSAGE_LONELY = "Lonely"
 # readmeのJSONのキー
 JSON_README_CONTENT = "content"
 
+# タスクJSONファイルのキー
+JSON_TASK_TASK = "Task"
+JSON_TASK_CHANNEL = "Channel"
+JSON_TASK_CHANNEL_ID = "ChannelID"
+JSON_TASK_TIME = "Time"
+JSON_TASK_MESSAGE = "Message"
+
 # 独りぼっち通知の置換文字列
 LONELY_MESSAGE_NAME = "{name}"
 LONELY_MESSAGE_CHANNEL = "{channel}"
