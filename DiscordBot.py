@@ -26,6 +26,7 @@ async def on_ready():
         # 定期実行処理を非同期で開始(discord.py側で非同期処理開始しているため、非同期処理を追加するだけでOK)
         logger.info("BOT起動")
         ensure_future(commonFunction.asyncDeleteLog())
+        ensure_future(commonFunction.asyncRemindTask())
     except Exception as e:
         logger.error("on_ready:例外発生")
         logger.error(e)
@@ -64,6 +65,15 @@ async def on_message(message):
                 elif content.startswith("readme"):
                     # readmeを表示
                     rtn = commonFunction.getReadme()
+                elif content.startswith("task list"):
+                    # タスクのリストを表示
+                    rtn = commonFunction.getTaskList(message.channel.id)
+                elif content.startswith("task add"):
+                    # タスクのリストに追加
+                    rtn = commonFunction.addTaskList(content.replace("task add ", ""), message.channel.id)
+                elif content.startswith("task delete"):
+                    # タスクのリストから削除
+                    rtn = commonFunction.deleteTaskList(content.replace("task delete ", ""), message.channel.id)
                 else:
                     # 対応していないメッセージだと通知
                     rtn = "何を言っているかわからないよ:sweat_smile:\n" \
@@ -120,7 +130,7 @@ def main(ini_path):
         # iniファイル、ロガーの設定
         ini.read(ini_path, "utf-8")
         logger = getMyLogger(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "logging.conf", __name__)
-        commonFunction = CommonFunction(ini, logger)
+        commonFunction = CommonFunction(ini, logger, client)
         client.run(ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_TOKEN))
     except Exception as e:
         print("main:例外発生")

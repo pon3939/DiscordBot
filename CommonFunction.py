@@ -10,6 +10,7 @@ from asyncio import sleep
 from base64 import b64decode
 from codecs import open
 from configparser import ConfigParser
+from datetime import datetime
 from googleapiclient.discovery import build
 from json import dump, load
 from random import randint
@@ -41,15 +42,18 @@ class CommonFunction:
     共通関数クラス
     """
 
-    def __init__(self, ini, logger):
+    def __init__(self, ini, logger, client):
         """
         コンストラクタ
 
         :param configparser.ConfigParser ini: INIファイル
+        :param logging.Logger logger: ロガー
+        :param discord.Client client: Discordクライアント
         """
         try:
             self.ini = ini
             self.logger = logger
+            self.client = client
         except Exception as e:
             self.logger.error("__init__:例外発生")
             self.logger.error(e)
@@ -105,7 +109,7 @@ class CommonFunction:
         :return: 選択した通知メッセージ
         """
         try:
-            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING)
+            f = open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "r", CommonConstants.FILE_ENCODING)
             json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             message = messageList[randint(0, len(messageList) - 1)] # ランダムにメッセージを選択
@@ -124,7 +128,7 @@ class CommonFunction:
         """
         try:
             rtn = ""
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as f:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "r", CommonConstants.FILE_ENCODING) as f:
                 json_data = load(f)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
 
@@ -132,7 +136,7 @@ class CommonFunction:
             for message in messageList:
                 if rtn != "":
                     rtn += "\n" # 2件目以降は改行
-                rtn += str(i) + ":" + message
+                rtn += str(i) + " : " + message
                 i += 1
             return rtn
         except Exception as e:
@@ -155,7 +159,7 @@ class CommonFunction:
             elif message.find(CommonConstants.LONELY_MESSAGE_CHANNEL) == -1:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
 
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if message in messageList:
@@ -163,7 +167,7 @@ class CommonFunction:
 
             messageList.append(message)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
@@ -187,7 +191,7 @@ class CommonFunction:
             if index < 0:
                 return "0以上の数値を指定してください"
 
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
             messageList = json_data[CommonConstants.JSON_MESSAGE_LONELY]
             if len(messageList) <= index:
@@ -196,7 +200,7 @@ class CommonFunction:
             delMessage = messageList[index] # チャットに流すためにテンプレートを取得
             messageList.pop(index)
             json_data[CommonConstants.JSON_MESSAGE_LONELY] = messageList
-            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Message.json", "w", CommonConstants.FILE_ENCODING) as fOut:
                 dump(json_data, fOut) # JSONファイル更新
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
@@ -265,4 +269,186 @@ class CommonFunction:
                 await sleep(86400) # 一日に1回実行
             except Exception as e:
                 self.logger.error("asyncDeleteLog:例外発生")
+                self.logger.error(e)
+
+    def getTaskList(self, channelID):
+        """
+        タスク一覧を表示
+
+        :param str channelID: タスクを取得するチャンネルID
+        :rtype: str
+        :return: タスク一覧
+        """
+        try:
+            rtn = ""
+            # Jsonファイル取得
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+                json_data = load(fIn)
+
+            for channel in json_data[CommonConstants.JSON_TASK_CHANNEL]:
+                if channel[CommonConstants.JSON_TASK_CHANNEL_ID] == channelID:
+                    i = 0
+                    for task in channel[CommonConstants.JSON_TASK_TASK]:
+                        if rtn != "":
+                            rtn += "\n" # 2件目以降は改行
+                        rtn += str(i) + " : " + task[CommonConstants.JSON_TASK_TIME] + " " + task[CommonConstants.JSON_TASK_MESSAGE]
+                        i += 1
+                    break
+
+            if rtn == "":
+                rtn = "登録されたタスクはありません"
+            return rtn
+        except Exception as e:
+            self.logger.error("getTaskList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
+
+    def addTaskList(self, message, channelID):
+        """
+        タスクを追加
+
+        :param str message: 登録するタスクのメッセージ
+        :param str channelID: タスクを登録するチャンネルID
+        :rtype: str
+        :return: 処理結果メッセージ
+        """
+        try:
+            splitList = message.split()
+            # バリデーション
+            if len(splitList) < 3:
+                return "task add %Y-%m-%d %H:%M {タスク内容}の形式で入力してください。"
+            time = self.strToDatetime(" ".join(splitList[:2]))
+            if time is None:
+                return "task add %Y-%m-%d %H:%M {タスク内容}の形式で入力してください。"
+            elif time < datetime.now():
+                return "未来の時間を指定してください。"
+
+            # タスクを作成
+            taskMessage = " ".join(splitList[2:])
+            task = {}
+            task[CommonConstants.JSON_TASK_TIME] = time.strftime("%Y-%m-%d %H:%M")
+            task[CommonConstants.JSON_TASK_MESSAGE] = taskMessage
+
+            # Jsonファイル取得
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+                json_data = load(fIn)
+
+            # チャンネルIDで検索して追加
+            exists = False
+            for i in range(len(json_data[CommonConstants.JSON_TASK_CHANNEL])):
+                if json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_CHANNEL_ID] == channelID:
+                    json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK].append(task)
+                    exists = True
+                    break
+
+            if not exists:
+                # なければ作成
+                channel = {}
+                channel[CommonConstants.JSON_TASK_CHANNEL_ID] = channelID
+                channel[CommonConstants.JSON_TASK_TASK] = [task]
+                json_data[CommonConstants.JSON_TASK_CHANNEL].append(channel)
+
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "w", CommonConstants.FILE_ENCODING) as fOut:
+                dump(json_data, fOut) # JSONファイル更新
+            return time.strftime("%Y-%m-%d %H:%M") + "に" + taskMessage + "を追加しました。"
+        except Exception as e:
+            self.logger.error("addTaskList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
+
+    def deleteTaskList(self, strIndex, channelID):
+        """
+        タスクを削除
+
+        :param str message: 削除するタスクのインデックス
+        :param str channelID: タスクを削除するチャンネルID
+        :rtype: str
+        :return: 処理結果メッセージ
+        """
+        try:
+            # バリデーション
+            if not strIndex.isdigit():
+                return "数値を指定してください"
+            index = int(strIndex) # 整数値に変換
+            if index < 0:
+                return "0以上の数値を指定してください"
+
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+                json_data = load(fIn)
+
+            # チャンネルIDで検索して削除
+            exists = False
+            for i in range(len(json_data[CommonConstants.JSON_TASK_CHANNEL])):
+                if json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_CHANNEL_ID] == channelID:
+                    if index < len(json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK]):
+                        exists = True
+                        delTask = json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK][index] # チャットに流すためにタスクを取得
+                        json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK].pop(index)
+                    break
+
+            if not exists:
+                return "入力されたインデックスのタスクは存在しません"
+
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "w", CommonConstants.FILE_ENCODING) as fOut:
+                dump(json_data, fOut) # JSONファイル更新
+            return "タスク\"" + delTask[CommonConstants.JSON_TASK_TIME] + " " + delTask[CommonConstants.JSON_TASK_MESSAGE] +  "\"を削除しました"
+        except Exception as e:
+            self.logger.error("addTaskList:例外発生")
+            self.logger.error(e)
+            return CommonConstants.ERROR_CHAT_MESSAGE
+
+    def strToDatetime(self, strDatetime):
+        """
+        strをDateTimeに変換
+
+        :param str strDatetime: 変換する文字列(%Y-%m-%d %H:%M)
+        :rtype: datetime
+        :return: 変換した値 変換失敗時はNone
+        """
+        try:
+            return datetime.strptime(strDatetime, "%Y-%m-%d %H:%M")
+        except Exception as e:
+            self.logger.error("strToDatetime:例外発生")
+            self.logger.error(e)
+            return None
+
+    async def remindTask(self):
+        """
+        タスクをリマインド
+        """
+        try:
+            self.logger.info("remindTask開始")
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "r", CommonConstants.FILE_ENCODING) as fIn:
+                json_data = load(fIn)
+
+            for i in range(len(json_data[CommonConstants.JSON_TASK_CHANNEL])):
+                channelID = json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_CHANNEL_ID]
+                for j in range(len(json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK])):
+                    taskTime = json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK][j][CommonConstants.JSON_TASK_TIME]
+                    taskMessage = json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK][j][CommonConstants.JSON_TASK_MESSAGE]
+                    if self.strToDatetime(taskTime) < datetime.now():
+                        # 時間を過ぎているものはリマインドして削除
+                        message = "リマインド : " + taskTime + " " + taskMessage
+                        await self.client.send_message(self.client.get_channel(channelID), message)
+                        json_data[CommonConstants.JSON_TASK_CHANNEL][i][CommonConstants.JSON_TASK_TASK].pop(j)
+
+            with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/Task.json", "w", CommonConstants.FILE_ENCODING) as fOut:
+                dump(json_data, fOut) # JSONファイル更新
+        except Exception as e:
+            self.logger.error("remindTask:例外発生")
+            self.logger.error(e)
+            raise e
+        finally:
+            self.logger.info("remindTask終了")
+
+    async def asyncRemindTask(self):
+        """
+        非同期でリマインド処理を実行
+        """
+        while True:
+            try:
+                await self.remindTask()
+                await sleep(30) # 30秒に1回実行
+            except Exception as e:
+                self.logger.error("asyncRemindTask:例外発生")
                 self.logger.error(e)
