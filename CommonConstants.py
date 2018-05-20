@@ -20,18 +20,22 @@ INI_OPTION_API_KEY = "apiKey"
 INI_OPTION_ENGINE_KEY = "engineKey"
 INI_OPTION_EXEC_DIR = "execDir"
 
-# メッセージJSONファイルのキー
-JSON_MESSAGE_LONELY = "Lonely"
+# JSONのファイル名
+JSON_NAME_TASK = "Task"
+JSON_NAME_MESSAGE = "Message"
+JSON_NAME_RSS = "RSS"
 
-# readmeのJSONのキー
-JSON_README_CONTENT = "content"
-
-# タスクJSONファイルのキー
-JSON_TASK_TASK = "Task"
-JSON_TASK_CHANNEL = "Channel"
-JSON_TASK_CHANNEL_ID = "ChannelID"
-JSON_TASK_TIME = "Time"
-JSON_TASK_MESSAGE = "Message"
+# JSONのキー
+JSON_KEY_CHANNEL = "Channel"
+JSON_KEY_CHANNEL_ID = "ChannelID"
+JSON_KEY_CONTENT = "content"
+JSON_KEY_ENTRIES = "Entries"
+JSON_KEY_LONELY = "Lonely"
+JSON_KEY_MESSAGE = "Message"
+JSON_KEY_RSS = "Rss"
+JSON_KEY_TASK = "Task"
+JSON_KEY_TIME = "Time"
+JSON_KEY_URL = "Url"
 
 # 独りぼっち通知の置換文字列
 LONELY_MESSAGE_NAME = "{name}"
