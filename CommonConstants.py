@@ -23,15 +23,19 @@ INI_OPTION_EXEC_DIR = "execDir"
 # JSONのファイル名
 JSON_NAME_TASK = "Task"
 JSON_NAME_MESSAGE = "Message"
+JSON_NAME_RSS = "RSS"
 
 # JSONのキー
 JSON_KEY_CHANNEL = "Channel"
 JSON_KEY_CHANNEL_ID = "ChannelID"
 JSON_KEY_CONTENT = "content"
+JSON_KEY_ENTRIES = "Entries"
 JSON_KEY_LONELY = "Lonely"
 JSON_KEY_MESSAGE = "Message"
+JSON_KEY_RSS = "Rss"
 JSON_KEY_TASK = "Task"
 JSON_KEY_TIME = "Time"
+JSON_KEY_URL = "Url"
 
 # 独りぼっち通知の置換文字列
 LONELY_MESSAGE_NAME = "{name}"

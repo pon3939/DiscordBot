@@ -27,6 +27,7 @@ async def on_ready():
         logger.info("BOT起動")
         ensure_future(commonFunction.asyncDeleteLog())
         ensure_future(commonFunction.asyncRemindTask())
+        ensure_future(commonFunction.asyncRSS())
     except Exception as e:
         logger.error("on_ready:例外発生")
         logger.error(e)
@@ -74,6 +75,15 @@ async def on_message(message):
                 elif content.startswith("task delete"):
                     # タスクのリストから削除
                     rtn = commonFunction.deleteTaskList(content.replace("task delete ", ""), message.channel.id)
+                elif content.startswith("rss list"):
+                    # RSSのリストを表示
+                    rtn = commonFunction.getRSSList(message.channel.id)
+                elif content.startswith("rss add"):
+                    # RSSのリストに追加
+                    rtn = commonFunction.addRSSList(content.replace("rss add ", ""), message.channel.id)
+                elif content.startswith("rss delete"):
+                    # RSSのリストから削除
+                    rtn = commonFunction.deleteRSSList(content.replace("rss delete ", ""), message.channel.id)
                 else:
                     # 対応していないメッセージだと通知
                     rtn = "何を言っているかわからないよ:sweat_smile:\n" \
