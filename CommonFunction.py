@@ -505,7 +505,7 @@ class CommonFunction:
             # エントリのIDを取得
             entries = []
             for entrie in parseResult["entries"]:
-                entries.append(entrie["id"])
+                entries.append(entrie["link"])
 
             rss = {}
             rss[CommonConstants.JSON_KEY_URL] = url
@@ -598,8 +598,8 @@ class CommonFunction:
                     title = parseResult["feed"]["title"] # タイトルを取得
                     entries = []
                     for entrie in parseResult["entries"]:
-                        entries.append(entrie["id"])
-                        if entrie["id"] not in json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_RSS][j][CommonConstants.JSON_KEY_ENTRIES]:
+                        entries.append(entrie["link"])
+                        if entrie["link"] not in json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_RSS][j][CommonConstants.JSON_KEY_ENTRIES]:
                             # 前回取得していない分はチャットに流す
                             message = title + "\n" + entrie["link"]
                             await self.client.send_message(self.client.get_channel(channelID), message)
