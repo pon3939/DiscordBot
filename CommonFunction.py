@@ -36,7 +36,7 @@ def getMyLogger(confFile, loggerName):
         return rtn
     except Exception as e:
         logger.error("GetMyLogger:例外発生")
-        logger.error(e)
+        logger.exception("%s", e)
         raise e
 
 class CommonFunction:
@@ -58,7 +58,7 @@ class CommonFunction:
             self.client = client
         except Exception as e:
             self.logger.error("__init__:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             raise e
 
     def search(self, searchWord):
@@ -98,7 +98,7 @@ class CommonFunction:
             return rtn
         except Exception as e:
             self.logger.error("search:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyMassage(self, name, channel):
@@ -118,7 +118,7 @@ class CommonFunction:
             return message.replace(CommonConstants.LONELY_MESSAGE_NAME, name).replace(CommonConstants.LONELY_MESSAGE_CHANNEL, channel) # ユーザ名、チャンネル名を置換
         except Exception as e:
             self.logger.error("getLonelyMassage:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getLonelyList(self):
@@ -143,7 +143,7 @@ class CommonFunction:
             return rtn
         except Exception as e:
             self.logger.error("getLonelyList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def addLonelyList(self, message):
@@ -174,7 +174,7 @@ class CommonFunction:
             return "テンプレート\"" + message + "\"を追加しました"
         except Exception as e:
             self.logger.error("addLonelyList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteLonelyList(self, strIndex):
@@ -207,7 +207,7 @@ class CommonFunction:
             return "テンプレート\"" + delMessage +  "\"を削除しました"
         except Exception as e:
             self.logger.error("deleteLonelyList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def getReadme(self):
@@ -233,7 +233,7 @@ class CommonFunction:
             return "\n".join(rtn) # 改行を挟んで連結
         except Exception as e:
             self.logger.error("getReadme:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteLog(self):
@@ -256,7 +256,7 @@ class CommonFunction:
                     return
         except Exception as e:
             self.logger.error("deleteLog:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             raise e
         finally:
             self.logger.info("deleteLog終了")
@@ -271,7 +271,7 @@ class CommonFunction:
                 await sleep(86400) # 一日に1回実行
             except Exception as e:
                 self.logger.error("asyncDeleteLog:例外発生")
-                self.logger.error(e)
+                self.logger.exception("%s", e)
 
     def getTaskList(self, channelID):
         """
@@ -302,7 +302,7 @@ class CommonFunction:
             return rtn
         except Exception as e:
             self.logger.error("getTaskList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def addTaskList(self, message, channelID):
@@ -355,7 +355,7 @@ class CommonFunction:
             return time.strftime("%Y-%m-%d %H:%M") + "に" + taskMessage + "を追加しました。"
         except Exception as e:
             self.logger.error("addTaskList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteTaskList(self, strIndex, channelID):
@@ -396,7 +396,7 @@ class CommonFunction:
             return "タスク\"" + delTask[CommonConstants.JSON_KEY_TIME] + " " + delTask[CommonConstants.JSON_KEY_MESSAGE] +  "\"を削除しました"
         except Exception as e:
             self.logger.error("addTaskList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def strToDatetime(self, strDatetime):
@@ -411,7 +411,7 @@ class CommonFunction:
             return datetime.strptime(strDatetime, "%Y-%m-%d %H:%M")
         except Exception as e:
             self.logger.error("strToDatetime:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return None
 
     async def remindTask(self):
@@ -438,7 +438,7 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
         except Exception as e:
             self.logger.error("remindTask:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             raise e
         finally:
             self.logger.info("remindTask終了")
@@ -453,7 +453,7 @@ class CommonFunction:
                 await sleep(30) # 30秒に1回実行
             except Exception as e:
                 self.logger.error("asyncRemindTask:例外発生")
-                self.logger.error(e)
+                self.logger.exception("%s", e)
 
     def getRSSList(self, channelID):
         """
@@ -484,7 +484,7 @@ class CommonFunction:
             return rtn
         except Exception as e:
             self.logger.error("getRSSList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def addRSSList(self, url, channelID):
@@ -538,7 +538,7 @@ class CommonFunction:
             return url + " を追加しました。"
         except Exception as e:
             self.logger.error("addRSSList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     def deleteRSSList(self, strIndex, channelID):
@@ -579,7 +579,7 @@ class CommonFunction:
             return delURL + " を削除しました"
         except Exception as e:
             self.logger.error("deleteRSSList:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
     async def getRSS(self):
@@ -609,7 +609,7 @@ class CommonFunction:
                 dump(json_data, fOut) # JSONファイル更新
         except Exception as e:
             self.logger.error("getRSS:例外発生")
-            self.logger.error(e)
+            self.logger.exception("%s", e)
             raise e
         finally:
             self.logger.info("getRSS終了")
@@ -624,4 +624,4 @@ class CommonFunction:
                 await sleep(300) # 5分に1回実行
             except Exception as e:
                 self.logger.error("asyncRSS:例外発生")
-                self.logger.error(e)
+                self.logger.exception("%s", e)

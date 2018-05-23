@@ -30,7 +30,7 @@ async def on_ready():
         ensure_future(commonFunction.asyncRSS())
     except Exception as e:
         logger.error("on_ready:例外発生")
-        logger.error(e)
+        logger.exception("%s", e)
 
 @client.event
 async def on_message(message):
@@ -122,7 +122,7 @@ async def on_voice_state_update(before, after):
                             break
     except Exception as e:
         logger.error("on_voice_state_update:例外発生")
-        logger.error(e)
+        logger.exception("%s", e)
     finally:
         logger.info("on_voice_state_update終了")
 
