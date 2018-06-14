@@ -637,7 +637,7 @@ class CommonFunction:
         try:
             async with ClientSession() as session:
                 async with session.get(url) as response:
-                    body = await response.text()
+                    body = await response.read()
             return parse(body)
         except Exception as e:
             self.logger.error("parseRSS:例外発生")
