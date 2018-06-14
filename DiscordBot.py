@@ -80,7 +80,7 @@ async def on_message(message):
                     rtn = commonFunction.getRSSList(message.channel.id)
                 elif content.startswith("rss add"):
                     # RSSのリストに追加
-                    rtn = commonFunction.addRSSList(content.replace("rss add ", ""), message.channel.id)
+                    rtn = await commonFunction.addRSSList(content.replace("rss add ", ""), message.channel.id)
                 elif content.startswith("rss delete"):
                     # RSSのリストから削除
                     rtn = commonFunction.deleteRSSList(content.replace("rss delete ", ""), message.channel.id)

@@ -6,6 +6,7 @@
 """
 
 import CommonConstants
+from aiohttp import ClientSession
 from asyncio import sleep
 from base64 import b64decode
 from codecs import open
@@ -487,7 +488,7 @@ class CommonFunction:
             self.logger.exception("%s", e)
             return CommonConstants.ERROR_CHAT_MESSAGE
 
-    def addRSSList(self, url, channelID):
+    async def addRSSList(self, url, channelID):
         """
         タスクを追加
 
@@ -498,7 +499,7 @@ class CommonFunction:
         """
         try:
             # RSS取得
-            parseResult = parse(url)
+            parseResult = await self.parseRSS(url)
             if len(parseResult["entries"]) < 1:
                 return "RSSではありません"
 
@@ -594,7 +595,7 @@ class CommonFunction:
             for i in range(len(json_data[CommonConstants.JSON_KEY_CHANNEL])):
                 channelID = json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_CHANNEL_ID]
                 for j in range(len(json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_RSS])):
-                    parseResult = parse(json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_RSS][j][CommonConstants.JSON_KEY_URL])
+                    parseResult = await self.parseRSS(json_data[CommonConstants.JSON_KEY_CHANNEL][i][CommonConstants.JSON_KEY_RSS][j][CommonConstants.JSON_KEY_URL])
                     title = parseResult["feed"]["title"] # タイトルを取得
                     entries = []
                     for entrie in parseResult["entries"]:
@@ -625,3 +626,19 @@ class CommonFunction:
             except Exception as e:
                 self.logger.error("asyncRSS:例外発生")
                 self.logger.exception("%s", e)
+
+    async def parseRSS(self, url):
+        """
+        :param str url: rssを取得するurl
+        :rtype: feedparser.FeedParserDict
+        :return: 取得したrss
+        非同期でRSSを取得
+        """
+        try:
+            async with ClientSession() as session:
+                async with session.get(url) as response:
+                    body = await response.read()
+            return parse(body)
+        except Exception as e:
+            self.logger.error("parseRSS:例外発生")
+            self.logger.exception("%s", e)
