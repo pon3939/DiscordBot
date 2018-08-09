@@ -159,8 +159,6 @@ class CommonFunction:
             # バリデーション
             if message.find(CommonConstants.LONELY_MESSAGE_NAME) == -1:
                 return "テンプレートには" + CommonConstants.LONELY_MESSAGE_NAME + "が含まれる必要があります"
-            elif message.find(CommonConstants.LONELY_MESSAGE_CHANNEL) == -1:
-                return "テンプレートには" + CommonConstants.LONELY_MESSAGE_CHANNEL + "が含まれる必要があります"
 
             with open(self.ini.get(CommonConstants.INI_SECTION_GENERAL, CommonConstants.INI_OPTION_EXEC_DIR) + "Json/" + CommonConstants.JSON_NAME_MESSAGE + ".json", "r", CommonConstants.FILE_ENCODING) as fIn:
                 json_data = load(fIn)
