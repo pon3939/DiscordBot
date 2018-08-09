@@ -36,8 +36,8 @@ def getMyLogger(confFile, loggerName):
         rtn = getLogger(loggerName)
         return rtn
     except Exception as e:
-        logger.error("GetMyLogger:例外発生")
-        logger.exception("%s", e)
+        print("GetMyLogger:例外発生")
+        print(e)
         raise e
 
 class CommonFunction:
