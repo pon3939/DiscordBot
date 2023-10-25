@@ -1,9 +1,5 @@
 # DiscordBot
 
-DiscordのBot  
-だれか面白いBOT作って
-___
-
 ## チャット
 
 ### readme表示
